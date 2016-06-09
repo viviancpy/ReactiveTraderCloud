@@ -41,6 +41,9 @@ echo ""
 echo "==============================="
 ./hive ${DOCKER_VERSION} ${TTY} do build devops/reactivetrader all id ${ID}
 
+# TRAP FOR STOP
+trap "./hive ${DOCKER_VERSION} ${TTY} do kill devops/reactivetrader all" EXIT INT TERM
+
 # RUN
 echo ""
 echo "============================="
@@ -53,8 +56,7 @@ echo "Giving some time for services to start"
 sleep 10
 ./hive ${DOCKER_VERSION} ${TTY} do run devops/reactivetrader test id ${ID} configuration ${RELEASE}
 
-# STOP
-./hive ${DOCKER_VERSION} ${TTY} do kill devops/reactivetrader all
+
 echo " "
 echo "============="
 echo "Time details:"
