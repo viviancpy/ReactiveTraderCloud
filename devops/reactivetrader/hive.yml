@@ -54,7 +54,7 @@ spec:
         image: reactivetrader/broker
       servers:
         major: 0
-        minor: 0
+        minor: 1
         image: reactivetrader/servers
       web:
         major: 0

@@ -24,7 +24,7 @@ command="mkdir -p ${package_folder}"
 command+=" && cp -r ${package_folder} /root/.nuget/"
 command+=" && dotnet restore"
 command+=" && cp -r /root/.nuget/packages /"
-command+="  dotnet build */project.json --configuration Release"
+command+=" && dotnet build */project.json --configuration Release"
 
 docker rm ${temp_container} 2&> /dev/null || true
 docker run                                   \

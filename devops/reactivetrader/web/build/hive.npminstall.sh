@@ -4,8 +4,8 @@ build="<% cli.id %>"
 nodemodules_cache_container="<% volume.nodemodules_cache %>"
 npm_cache_container="<% volume.npm_cache %>"
 
-major="<% reactivetrader.broker.major %>"
-minor="<% reactivetrader.broker.minor %>"
+major="<% base.node.major %>"
+minor="<% base.node.minor %>"
 web_container="<% base.node.image %>:${major}.${minor}"
 
 temp_image="weareadaptive/websrc"

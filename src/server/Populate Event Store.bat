@@ -1,1 +1,1 @@
-dotnet run -p Adaptive.ReactiveTrader.Server.Launcher --populate-eventstore
+dotnet run --configuration Release -p Adaptive.ReactiveTrader.Server.Launcher --populate-eventstore
