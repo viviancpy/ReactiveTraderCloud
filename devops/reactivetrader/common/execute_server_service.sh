@@ -30,8 +30,8 @@ else
   exit 1
 fi
 
-command="dnx ${configuration}"
-command+=" -p Adaptive.ReactiveTrader.Server.Launcher run ${key}"
+command="dotnet run ${configuration}"
+command+=" -p Adaptive.ReactiveTrader.Server.Launcher ${key}"
 command+=" && while true; do echo ping; sleep 60; done"
 
 docker kill ${service} 2&> /dev/null || true

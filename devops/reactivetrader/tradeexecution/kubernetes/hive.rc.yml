@@ -25,5 +25,5 @@ spec:
       containers:
       - name: "tradeexecution"
         image: "<% reactivetrader.servers.image %>:<% reactivetrader.servers.major %>.<% reactivetrader.servers.minor %>.<% cli.id %>"
-        command: [ "dnx", "--configuration", "Release", "-p", "Adaptive.ReactiveTrader.Server.TradeExecution", "prod" ]
+        command: ["dotnet", "run", "--configuration", "Release", "-p", "Adaptive.ReactiveTrader.Server.TradeExecution", "config.prod.json"]
         imagePullPolicy: IfNotPresent

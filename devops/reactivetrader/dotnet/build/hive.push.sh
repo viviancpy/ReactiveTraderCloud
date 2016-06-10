@@ -1,7 +1,7 @@
 #! /bin/bash
 
 id="<% cli.id %>"
-image="<% base.mono.image %>:<% base.mono.major %>.<% base.mono.minor %>"
+image="<% base.dotnet.image %>:<% base.dotnet.major %>.<% base.dotnet.minor %>"
 
 # fail fast
 set -euo pipefail

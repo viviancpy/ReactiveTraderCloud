@@ -25,5 +25,5 @@ spec:
       containers:
       - name: "referencedataread"
         image: "<% reactivetrader.servers.image %>:<% reactivetrader.servers.major %>.<% reactivetrader.servers.minor %>.<% cli.id %>"
-        command: [ "dnx", "--configuration", "Release", "-p", "Adaptive.ReactiveTrader.Server.ReferenceDataRead", "prod" ]
+        command: ["dotnet", "run", "--configuration", "Release", "-p", "Adaptive.ReactiveTrader.Server.ReferenceDataRead", "config.prod.json"]
         imagePullPolicy: IfNotPresent

@@ -39,7 +39,7 @@ spec:
     os: ubuntu:14.04.2
 
     volume:
-      dnu_cache:         reactivetrader_cache_dnupackage
+      dotnet_cache:      reactivetrader_cache_dotnetpackage
       nodemodules_cache: reactivetrader_cache_nodemodules
       npm_cache:         reactivetrader_cache_npmcache
 
@@ -73,20 +73,20 @@ spec:
         image: weareadaptive/eventstore
         official_version: 3.3.0
       node:
-        major: 0
-        minor: 0
+        major: 6
+        minor: 2
         image: weareadaptive/node
-        official_version: 5.3.0
+        official_version: 6.2.1
       nginx:
         major: 0
         minor: 0
         image: weareadaptive/nginx
         official_image: nginx:1.9.7
-      mono:
+      dotnet:
         major: 0
         minor: 0
-        image: weareadaptive/mono
-        dnx_version: 1.0.0-rc1-final
+        image: weareadaptive/dotnet
+        dotnet_version: dotnet-dev-1.0.0-preview1-002702
 
     local_proxy:
       name: local_proxy

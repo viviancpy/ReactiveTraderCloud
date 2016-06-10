@@ -9,8 +9,8 @@ set -euo pipefail
 
 # smoke tests
 echo " "
-echo "Starting local tests ..."
-test_command="dnx --configuration Release -p Adaptive.ReactiveTrader.Server.IntegrationTests test -parallel none"
+echo "Starting integration tests ..."
+test_command="dotnet test --configuration Release Adaptive.ReactiveTrader.Server.IntegrationTests"
 docker run         \
   --net=host       \
   ${servers_image} \

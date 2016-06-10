@@ -26,4 +26,4 @@ spec:
       - name: "blotter"
         image: "<% reactivetrader.servers.image %>:<% reactivetrader.servers.major %>.<% reactivetrader.servers.minor %>.<% cli.id %>"
         imagePullPolicy: IfNotPresent
-        command: [ "dnx", "--configuration", "Release", "-p", "Adaptive.ReactiveTrader.Server.Blotter", "prod"]
+        command: ["dotnet", "run", "--configuration", "Release", "-p", "Adaptive.ReactiveTrader.Server.Blotter", "config.prod.json"]
