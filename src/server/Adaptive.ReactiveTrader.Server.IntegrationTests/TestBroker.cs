@@ -17,7 +17,7 @@ namespace Adaptive.ReactiveTrader.Server.IntegrationTests
 
         public TestBroker()
         {
-            var configFile = Directory.GetCurrentDirectory() + "/integration-test.config.json";
+            var configFile = Path.Combine(Directory.GetCurrentDirectory(), "integration-test.config.json");
             var brokerEndpoint = File.Exists(configFile) ? JsonConvert.DeserializeObject<IntegrationTestConfig>(File.ReadAllText(configFile)).Endpoint : TestAddress.Broker;
 
             Console.WriteLine(brokerEndpoint);
