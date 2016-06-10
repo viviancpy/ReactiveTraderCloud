@@ -1,0 +1,13 @@
+.browser-chrome__content {
+  height: 100vh;
+
+  > div {
+    height: 100%;
+  }
+}
+
+@media all and (max-width: 700px) {
+  .browser-chrome__content > div {
+    height: auto;
+  }
+}

@@ -1,5 +1,6 @@
 import { Router, DisposableBase } from 'esp-js/src';
 import { logger, Guard } from '../../system';
+import userAgentParser from 'ua-parser-js';
 
 var _log:logger.Logger = logger.create('ModelBase');
 
@@ -28,12 +29,17 @@ export default class ModelBase extends DisposableBase {
   /**
    * Runs the given action on the dispatch loop for this model, ensures that any model observer will be notified of the change
    * @param action
-     */
+   */
   ensureOnDispatchLoop(action:() => void) {
     // TODO update when https://github.com/esp/esp-js/issues/86 is implemented
     this.router.runAction(this.modelId, ()=>{
       action();
     });
+  }
+
+  canPopout(){
+    let browser = new userAgentParser().getBrowser().name;
+    return browser.indexOf('IE') !== -1;
   }
 
   get modelId():string {

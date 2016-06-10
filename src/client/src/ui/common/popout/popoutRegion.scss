@@ -1,0 +1,23 @@
+#popout-content-container {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  > div {
+    width: 100%;
+    height: 100%;
+  }
+
+
+  .popout__controls,
+  .popout__undock {
+    display: none;
+  }
+
+  &:hover .docked {
+    .popout__undock {
+      display: inline;
+    }
+  }
+
+
+}

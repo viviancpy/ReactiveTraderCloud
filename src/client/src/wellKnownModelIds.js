@@ -21,6 +21,10 @@ export default class WellKnownModelIds {
     return 'blotterRegionModelId';
   }
 
+  static get sidebarRegionModelId() {
+    return 'sidebarRegionModelId';
+  }
+
   static get shellModelId() {
     return 'shellModelId';
   }
@@ -29,11 +33,23 @@ export default class WellKnownModelIds {
     return 'headerModelId';
   }
 
+  static get footerModelId() {
+    return 'footerModelId';
+  }
+
   static get analyticsModelId() {
     return 'analyticsModelId';
   }
 
   static get blotterModelId() {
     return 'blotterModelId';
+  }
+
+  static get chromeModelId() {
+    return 'chromeModelId';
+  }
+
+  static get sidebarModelId() {
+    return 'sidebarModelId';
   }
 }
