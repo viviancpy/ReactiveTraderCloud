@@ -2,6 +2,7 @@
 using System.Reactive.Disposables;
 using System.Text;
 using System.Threading.Tasks;
+using Adaptive.ReactiveTrader.EventStore.Domain;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.Exceptions;
 using Newtonsoft.Json;
@@ -34,11 +35,11 @@ namespace Adaptive.ReactiveTrader.EventStore.EventHandling
                                                   EventTypeResolver eventTypeResolver,
                                                   EventHandlerRouter eventHandlerRouter)
         {
-            object deserialisedEvent;
+            object payload;
 
             try
             {
-                deserialisedEvent = DeserialiseEvent(resolvedEvent.Event, eventTypeResolver);
+                payload = DeserialiseEvent(resolvedEvent.Event, eventTypeResolver);
             }
             catch (Exception ex)
             {
@@ -47,7 +48,7 @@ namespace Adaptive.ReactiveTrader.EventStore.EventHandling
                 return;
             }
 
-            if (!eventHandlerRouter.CanRoute(deserialisedEvent))
+            if (!eventHandlerRouter.CanRoute(payload))
             {
                 // No event route handler found. Skip this event.
                 subscription.Fail(resolvedEvent, PersistentSubscriptionNakEventAction.Skip, "Event handler route not found");
@@ -56,7 +57,12 @@ namespace Adaptive.ReactiveTrader.EventStore.EventHandling
 
             try
             {
-                await eventHandlerRouter.Route(deserialisedEvent);
+                var readEvent = ReadEvent.Create(resolvedEvent.OriginalStreamId,
+                                                 resolvedEvent.Event.EventType,
+                                                 resolvedEvent.OriginalEventNumber,
+                                                 payload);
+
+                await eventHandlerRouter.Route(readEvent);
 
                 // All handlers successfully handled this event. Mark it as acknowledged.   
                 subscription.Acknowledge(resolvedEvent);

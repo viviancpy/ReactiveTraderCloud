@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Adaptive.ReactiveTrader.EventStore.Domain;
 
 namespace Adaptive.ReactiveTrader.EventStore.Process
 {
@@ -8,11 +9,10 @@ namespace Adaptive.ReactiveTrader.EventStore.Process
         string StreamPrefix { get; }
         string Identifier { get; }
         int Version { get; }
-        void Transition(object @event);
-        IReadOnlyList<object> GetUncommittedEvents();
-        IReadOnlyList<object> GetUndispatchedMessages();
+        void Transition(IReadEvent<object> @event);
+        IReadOnlyList<WriteEvent> GetUncommittedEvents();
         void ClearUncommittedEvents();
-        void ClearUndispatchedMessages();
         Task DispatchMessages();
+        void ClearUndispatchedMessages();
     }
 }

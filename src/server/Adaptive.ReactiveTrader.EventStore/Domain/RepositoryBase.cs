@@ -27,7 +27,7 @@ namespace Adaptive.ReactiveTrader.EventStore.Domain
             _eventTypeResolver = eventTypeResolver;
         }
 
-        protected async Task<SliceReadStatus> ReadEventsAsync(string streamName, Action<object> onEventRead)
+        protected async Task<SliceReadStatus> ReadEventsAsync(string streamName, Action<IReadEvent<object>> onEventRead)
         {
             var eventNumber = 0;
             StreamEventsSlice currentSlice;
@@ -44,8 +44,8 @@ namespace Adaptive.ReactiveTrader.EventStore.Domain
 
                 foreach (var resolvedEvent in currentSlice.Events)
                 {
-                    var payload = DeserializeEvent(resolvedEvent.Event);
-                    onEventRead(payload);
+                    var readEvent = DeserializeEvent(resolvedEvent);
+                    onEventRead(readEvent);
                 }
             } while (!currentSlice.IsEndOfStream);
 
@@ -54,7 +54,7 @@ namespace Adaptive.ReactiveTrader.EventStore.Domain
 
         protected async Task<WriteResult> WriteEventsAsync(string streamName,
                                                            int expectedVersion,
-                                                           IEnumerable<object> events,
+                                                           IEnumerable<WriteEvent> events,
                                                            IEnumerable<KeyValuePair<string, string>> extraHeaders,
                                                            string commitId)
         {
@@ -62,7 +62,7 @@ namespace Adaptive.ReactiveTrader.EventStore.Domain
             {
                 WriteResult result;
                 var commitHeaders = CreateCommitHeaders(commitId, extraHeaders);
-                var eventList = events as IReadOnlyList<object> ?? events.ToList();
+                var eventList = events as IReadOnlyList<WriteEvent> ?? events.ToList();
                 var eventsToSave = eventList.Select(x => ToEventData(Guid.NewGuid(), x, commitHeaders));
 
                 if (Log.IsEnabled(LogEventLevel.Information))
@@ -123,11 +123,19 @@ namespace Adaptive.ReactiveTrader.EventStore.Domain
             return new WriteResult();
         }
 
-        private object DeserializeEvent(RecordedEvent evt)
+        private IReadEvent<object> DeserializeEvent(ResolvedEvent resolvedEvent)
         {
-            var targetType = _eventTypeResolver.GetTypeForEventName(evt.EventType);
-            var json = Encoding.UTF8.GetString(evt.Data);
-            return JsonConvert.DeserializeObject(json, targetType);
+            var jsonPayload = Encoding.UTF8.GetString(resolvedEvent.Event.Data);
+            var jsonMetadata = Encoding.UTF8.GetString(resolvedEvent.Event.Metadata);
+            var targetEventType = _eventTypeResolver.GetTypeForEventName(resolvedEvent.Event.EventType);
+            var payload = JsonConvert.DeserializeObject(jsonPayload, targetEventType);
+            var metadata = (Dictionary<string, string>)JsonConvert.DeserializeObject(jsonMetadata, typeof(Dictionary<string, string>));
+
+            return ReadEvent.Create(resolvedEvent.OriginalStreamId,
+                                    resolvedEvent.Event.EventType,
+                                    resolvedEvent.OriginalEventNumber,
+                                    payload,
+                                    metadata);
         }
 
         private static IDictionary<string, string> CreateCommitHeaders(string commitId, IEnumerable<KeyValuePair<string, string>> extraHeaders)
@@ -148,19 +156,27 @@ namespace Adaptive.ReactiveTrader.EventStore.Domain
             return commitHeaders;
         }
 
-        private static EventData ToEventData(Guid eventId, object @event, IDictionary<string, string> headers)
+        private static EventData ToEventData(Guid eventId, WriteEvent writeEvent, IDictionary<string, string> commitHeaders)
         {
-            var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(@event, SerializerSettings));
+            var payload = writeEvent.Payload;
+            var eventType = payload.GetType().Name;
+            var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(payload, SerializerSettings));
 
-            var eventHeaders = new Dictionary<string, string>(headers)
+            // Add the commit headers & CLR type of the event (for deserialisation) to the metadata.
+            var allMetadata = new Dictionary<string, string>(commitHeaders)
             {
-                { MetadataKeys.EventClrTypeHeader, @event.GetType().AssemblyQualifiedName }
+                { MetadataKeys.EventClrTypeHeader, payload.GetType().AssemblyQualifiedName }
             };
 
-            var metadata = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(eventHeaders, SerializerSettings));
-            var typeName = @event.GetType().Name;
+            // Add any metadata specified in the WriteEvent
+            foreach (var kvp in writeEvent.Metadata)
+            {
+                allMetadata.Add(kvp.Key, kvp.Value);
+            }
 
-            return new EventData(eventId, typeName, true, data, metadata);
+            var metadata = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(allMetadata, SerializerSettings));
+            
+            return new EventData(eventId, eventType, true, data, metadata);
         }
 
         private static IList<IList<EventData>> GetEventBatches(IEnumerable<EventData> events)

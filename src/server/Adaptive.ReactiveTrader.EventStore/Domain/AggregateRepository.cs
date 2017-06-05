@@ -29,7 +29,7 @@ namespace Adaptive.ReactiveTrader.EventStore.Domain
                 Log.Information("Loading aggregate {streamName} from Event Store", streamName);
             }
 
-            var result = await ReadEventsAsync(streamName, e => aggregate.ApplyEvent(e));
+            var result = await ReadEventsAsync(streamName, e => aggregate.ApplyEvent(e.Payload));
 
             switch (result)
             {
@@ -53,7 +53,7 @@ namespace Adaptive.ReactiveTrader.EventStore.Domain
                 Log.Information("Loading aggregate {streamName} from Event Store", streamName);
             }
 
-            var result = await ReadEventsAsync(streamName, e => aggregate.ApplyEvent(e));
+            var result = await ReadEventsAsync(streamName, e => aggregate.ApplyEvent(e.Payload));
 
             switch (result)
             {
@@ -69,7 +69,7 @@ namespace Adaptive.ReactiveTrader.EventStore.Domain
         public async Task<int> SaveAsync(AggregateBase aggregate, params KeyValuePair<string, string>[] extraHeaders)
         {
             var streamName = aggregate.Identifier;
-            var pendingEvents = aggregate.GetPendingEvents();
+            var pendingEvents = aggregate.GetUncommittedEvents();
             var expectedVersion = aggregate.Version - pendingEvents.Count;
             var commitId = Guid.NewGuid().ToString();
 
@@ -86,7 +86,7 @@ namespace Adaptive.ReactiveTrader.EventStore.Domain
 
             var result = await WriteEventsAsync(streamName, expectedVersion, pendingEvents, allExtraHeaders, commitId);
 
-            aggregate.ClearPendingEvents();
+            aggregate.ClearUncommittedEvents();
 
             if (Log.IsEnabled(LogEventLevel.Information))
             {

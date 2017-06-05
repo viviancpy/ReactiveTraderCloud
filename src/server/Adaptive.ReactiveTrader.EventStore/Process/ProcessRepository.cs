@@ -61,13 +61,10 @@ namespace Adaptive.ReactiveTrader.EventStore.Process
             process.ClearUncommittedEvents();
             process.ClearUndispatchedMessages();
 
-            switch (result)
+            if (result == SliceReadStatus.StreamDeleted)
             {
-                case SliceReadStatus.StreamNotFound:
-                    return process;
-                case SliceReadStatus.StreamDeleted:
-                    // TODO - new exception type for Processes
-                    throw new AggregateDeletedException(id, typeof(TProcess));
+                // TODO - new exception type for Processes
+                throw new AggregateDeletedException(id, typeof(TProcess));
             }
 
             return process;
@@ -77,6 +74,12 @@ namespace Adaptive.ReactiveTrader.EventStore.Process
         {
             var streamName = process.Identifier;
             var events = process.GetUncommittedEvents();
+            if (events.Count == 0)
+            {
+                Log.Information("Process {streamName} has no events to save", streamName);
+                return -1;
+            }
+
             var expectedVersion = process.Version - events.Count;
             var commitId = Guid.NewGuid().ToString();
 

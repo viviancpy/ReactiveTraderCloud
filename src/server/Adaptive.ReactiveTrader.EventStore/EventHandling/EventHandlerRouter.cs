@@ -1,24 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Adaptive.ReactiveTrader.EventStore.Domain;
+using Adaptive.ReactiveTrader.EventStore.Process;
 
 namespace Adaptive.ReactiveTrader.EventStore.EventHandling
 {
     public class EventHandlerRouter
     {
-        private readonly Dictionary<Type, Func<object, Task>> _handlers = new Dictionary<Type, Func<object, Task>>();
+        private readonly Dictionary<Type, Func<IReadEvent<object>, Task>> _handlers = new Dictionary<Type, Func<IReadEvent<object>, Task>>();
 
-        public void AddRoute<TEvent>(Func<TEvent, Task> handler)
+        public void AddRoute<TEvent>(Func<IReadEvent<TEvent>, Task> handler)
         {
-            _handlers.Add(typeof(TEvent), x => handler((TEvent)x));
+            _handlers.Add(typeof(TEvent), x => handler(ReadEvent.Create(x.StreamId, x.EventType, x.EventNumber, (TEvent)x.Payload)));
         }
 
         public bool CanRoute(object @event) => _handlers.ContainsKey(@event.GetType());
 
-        public Task Route(object @event)
+        public Task Route(IReadEvent<object> @event)
         {
-            Func<object, Task> handler;
-            return _handlers.TryGetValue(@event.GetType(), out handler) ? handler(@event) : Task.CompletedTask;
+            Func<IReadEvent<object>, Task> handler;
+            return _handlers.TryGetValue(@event.Payload.GetType(), out handler) ? handler(@event) : Task.CompletedTask;
         }
     }
 }

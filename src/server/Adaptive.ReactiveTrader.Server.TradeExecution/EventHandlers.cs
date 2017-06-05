@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Adaptive.ReactiveTrader.Contract.Events.CreditAccount;
 using Adaptive.ReactiveTrader.Contract.Events.Trade;
+using Adaptive.ReactiveTrader.EventStore.Domain;
 using Adaptive.ReactiveTrader.EventStore.EventHandling;
 using Adaptive.ReactiveTrader.EventStore.Process;
 using Adaptive.ReactiveTrader.Server.TradeExecution.Domain;
@@ -23,37 +24,37 @@ namespace Adaptive.ReactiveTrader.Server.TradeExecution
             return router;
         }
 
-        private static async Task Handle(TradeCreatedEvent @event, IProcessRepository repository, Func<TradeExecutionProcess> factory)
+        private static async Task Handle(IReadEvent<TradeCreatedEvent> @event, IProcessRepository repository, Func<TradeExecutionProcess> factory)
         {
-            var process = await repository.GetByIdOrCreateAsync(@event.TradeId, factory);
+            var process = await repository.GetByIdOrCreateAsync(@event.Payload.TradeId, factory);
             process.Transition(@event);
             await repository.SaveAsync(process);
         }
 
-        private static async Task Handle(CreditReservedEvent @event, IProcessRepository repository, Func<TradeExecutionProcess> factory)
+        private static async Task Handle(IReadEvent<CreditReservedEvent> @event, IProcessRepository repository, Func<TradeExecutionProcess> factory)
         {
-            var process = await repository.GetByIdAsync(@event.TradeId, factory);
+            var process = await repository.GetByIdAsync(@event.Payload.TradeId, factory);
             process.Transition(@event);
             await repository.SaveAsync(process);
         }
 
-        private static async Task Handle(CreditLimitBreachedEvent @event, IProcessRepository repository, Func<TradeExecutionProcess> factory)
+        private static async Task Handle(IReadEvent<CreditLimitBreachedEvent> @event, IProcessRepository repository, Func<TradeExecutionProcess> factory)
         {
-            var process = await repository.GetByIdAsync(@event.TradeId, factory);
+            var process = await repository.GetByIdAsync(@event.Payload.TradeId, factory);
             process.Transition(@event);
             await repository.SaveAsync(process);
         }
 
-        private static async Task Handle(TradeCompletedEvent @event, IProcessRepository repository, Func<TradeExecutionProcess> factory)
+        private static async Task Handle(IReadEvent<TradeCompletedEvent> @event, IProcessRepository repository, Func<TradeExecutionProcess> factory)
         {
-            var process = await repository.GetByIdAsync(@event.TradeId, factory);
+            var process = await repository.GetByIdAsync(@event.Payload.TradeId, factory);
             process.Transition(@event);
             await repository.SaveAsync(process);
         }
 
-        private static async Task Handle(TradeRejectedEvent @event, IProcessRepository repository, Func<TradeExecutionProcess> factory)
+        private static async Task Handle(IReadEvent<TradeRejectedEvent> @event, IProcessRepository repository, Func<TradeExecutionProcess> factory)
         {
-            var process = await repository.GetByIdAsync(@event.TradeId, factory);
+            var process = await repository.GetByIdAsync(@event.Payload.TradeId, factory);
             process.Transition(@event);
             await repository.SaveAsync(process);
         }

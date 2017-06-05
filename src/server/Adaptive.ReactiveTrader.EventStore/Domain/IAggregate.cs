@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Adaptive.ReactiveTrader.EventStore.Process;
 
 namespace Adaptive.ReactiveTrader.EventStore.Domain
 {
@@ -8,7 +9,7 @@ namespace Adaptive.ReactiveTrader.EventStore.Domain
         string Identifier { get; }
         int Version { get; }
         void ApplyEvent(object @event);
-        ICollection<object> GetPendingEvents();
-        void ClearPendingEvents();
+        ICollection<WriteEvent> GetUncommittedEvents();
+        void ClearUncommittedEvents();
     }
 }
