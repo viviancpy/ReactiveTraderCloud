@@ -2,13 +2,13 @@
 {
     public class CreditReservedEvent
     {
-        public CreditReservedEvent(string accountName, string tradeId)
+        public CreditReservedEvent(string accountName, long tradeId)
         {
             AccountName = accountName;
             TradeId = tradeId;
         }
 
         public string AccountName { get; }
-        public string TradeId { get; }
+        public long TradeId { get; }
     }
 }

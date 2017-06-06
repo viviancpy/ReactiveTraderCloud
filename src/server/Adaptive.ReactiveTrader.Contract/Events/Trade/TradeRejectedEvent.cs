@@ -2,13 +2,13 @@
 {
     public class TradeRejectedEvent
     {
-        public TradeRejectedEvent(string tradeId, string reason)
+        public TradeRejectedEvent(long tradeId, string reason)
         {
             TradeId = tradeId;
             Reason = reason;
         }
 
-        public string TradeId { get; }
+        public long TradeId { get; }
         public string Reason { get; }
     }
 }

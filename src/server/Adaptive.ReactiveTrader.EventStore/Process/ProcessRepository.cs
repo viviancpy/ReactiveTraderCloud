@@ -20,7 +20,7 @@ namespace Adaptive.ReactiveTrader.EventStore.Process
             // Nothing to do
         }
 
-        public async Task<TProcess> GetByIdAsync<TProcess>(string id, Func<TProcess> factory) where TProcess : IProcess
+        public async Task<TProcess> GetByIdAsync<TProcess>(object id, Func<TProcess> factory) where TProcess : IProcess
         {
             var process = factory();
             var streamName = $"{process.StreamPrefix}{id}";
@@ -47,7 +47,7 @@ namespace Adaptive.ReactiveTrader.EventStore.Process
             return process;
         }
 
-        public async Task<TProcess> GetByIdOrCreateAsync<TProcess>(string id, Func<TProcess> factory) where TProcess : IProcess
+        public async Task<TProcess> GetByIdOrCreateAsync<TProcess>(object id, Func<TProcess> factory) where TProcess : IProcess
         {
             var process = factory();
             var streamName = $"{process.StreamPrefix}{id}";
@@ -88,9 +88,10 @@ namespace Adaptive.ReactiveTrader.EventStore.Process
                 Log.Information("Saving process {streamName}", streamName);
             }
 
-            var result = await WriteEventsAsync(streamName, expectedVersion, events, extraHeaders, commitId);
-
             await process.DispatchMessages();
+
+            // Only save after we've successfully dispatched all messages.
+            var result = await WriteEventsAsync(streamName, expectedVersion, events, extraHeaders, commitId);
 
             if (Log.IsEnabled(LogEventLevel.Information))
             {

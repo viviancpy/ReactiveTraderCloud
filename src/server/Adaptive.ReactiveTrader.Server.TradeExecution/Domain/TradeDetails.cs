@@ -5,7 +5,7 @@ namespace Adaptive.ReactiveTrader.Server.TradeExecution.Domain
 {
     public class TradeDetails
     {
-        public TradeDetails(string tradeId,
+        public TradeDetails(long tradeId,
                             string currencyPair,
                             decimal spotRate,
                             DateTime tradeDate,
@@ -24,7 +24,7 @@ namespace Adaptive.ReactiveTrader.Server.TradeExecution.Domain
             DealtCurrency = dealtCurrency;
         }
 
-        public string TradeId { get; }
+        public long TradeId { get; }
         public string CurrencyPair { get; }
         public decimal SpotRate { get; }
         public DateTime TradeDate { get; }

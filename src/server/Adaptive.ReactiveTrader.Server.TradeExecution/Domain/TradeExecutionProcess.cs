@@ -25,7 +25,7 @@ namespace Adaptive.ReactiveTrader.Server.TradeExecution.Domain
 
         public override string StreamPrefix { get; } = "tradeExecution-";
         public override string Identifier => $"{StreamPrefix}{TradeId}";
-        public string TradeId { get; private set; }
+        public long TradeId { get; private set; }
 
         private void OnEvent(TradeCreatedEvent @event)
         {

@@ -15,7 +15,7 @@ namespace Adaptive.ReactiveTrader.Server.TradeExecution
                                                                       IAggregateRepository repository,
                                                                       TradeIdProvider idProvider)
         {
-            var tradeId = (await idProvider.GetNextId()).ToString();
+            var tradeId = await idProvider.GetNextId();
             var tradeDate = DateTime.UtcNow;
 
             DateTime valueDate;
@@ -34,12 +34,13 @@ namespace Adaptive.ReactiveTrader.Server.TradeExecution
                                   request.Notional,
                                   request.DealtCurrency);
 
+            await repository.SaveAsync(trade);
+
+            // TODO - fix the client so that we timeout based on a trade status stream
             if (request.CurrencyPair == "EURJPY")
             {
                 await Task.Delay(TimeSpan.FromSeconds(5));
             }
-
-            await repository.SaveAsync(trade);
 
             return new ExecuteTradeResponseDto
             {
@@ -71,6 +72,12 @@ namespace Adaptive.ReactiveTrader.Server.TradeExecution
             if (creditAccount.Version == -1)
             {
                 creditAccount.Create(command.AccountName);
+            }
+
+            // TODO - fix the client so that we timeout based on a trade status stream
+            if (command.TradeDetails.CurrencyPair == "EURJPY")
+            {
+                await Task.Delay(TimeSpan.FromSeconds(5));
             }
 
             // Emulate some variable delays based on currency pair.

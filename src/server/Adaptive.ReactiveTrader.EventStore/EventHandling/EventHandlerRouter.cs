@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Adaptive.ReactiveTrader.EventStore.Domain;
-using Adaptive.ReactiveTrader.EventStore.Process;
 
 namespace Adaptive.ReactiveTrader.EventStore.EventHandling
 {

@@ -2,11 +2,11 @@ namespace Adaptive.ReactiveTrader.Server.TradeExecution.Commands
 {
     public class CompleteTradeCommand
     {
-        public CompleteTradeCommand(string tradeId)
+        public CompleteTradeCommand(long tradeId)
         {
             TradeId = tradeId;
         }
 
-        public string TradeId { get; }
+        public long TradeId { get; }
     }
 }

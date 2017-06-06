@@ -57,6 +57,11 @@ namespace Adaptive.ReactiveTrader.EventStore.EventHandling
 
             try
             {
+                Log.Information("Dispatching event {event} from {eventNumber}@{streamId}",
+                                resolvedEvent.Event.EventType,
+                                resolvedEvent.OriginalEventNumber,
+                                resolvedEvent.OriginalStreamId);
+
                 var readEvent = ReadEvent.Create(resolvedEvent.OriginalStreamId,
                                                  resolvedEvent.Event.EventType,
                                                  resolvedEvent.OriginalEventNumber,

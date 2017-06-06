@@ -6,7 +6,7 @@ namespace Adaptive.ReactiveTrader.Server.Common
     public class Trade
     {
         public Trade(
-            string tradeId,
+            long tradeId,
             string traderName,
             string currencyPair,
             decimal notional,
@@ -29,7 +29,7 @@ namespace Adaptive.ReactiveTrader.Server.Common
             Status = status;
         }
 
-        public string TradeId { get; }
+        public long TradeId { get; }
         public string TraderName { get; }
         public string CurrencyPair { get; }
         public decimal Notional { get; }

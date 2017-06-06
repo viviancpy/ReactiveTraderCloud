@@ -19,7 +19,7 @@ namespace Adaptive.ReactiveTrader.EventStore.Domain
             Log.Warning("Not Disposing.");
         }
 
-        public async Task<TAggregate> GetByIdAsync<TAggregate>(string id) where TAggregate : IAggregate, new()
+        public async Task<TAggregate> GetByIdAsync<TAggregate>(object id) where TAggregate : IAggregate, new()
         {
             var aggregate = new TAggregate();
             var streamName = $"{aggregate.StreamPrefix}{id}";
@@ -42,8 +42,7 @@ namespace Adaptive.ReactiveTrader.EventStore.Domain
             return aggregate;
         }
 
-        public async Task<TAggregate> GetByIdOrCreateAsync<TAggregate>(string id)
-            where TAggregate : class, IAggregate, new()
+        public async Task<TAggregate> GetByIdOrCreateAsync<TAggregate>(object id) where TAggregate : class, IAggregate, new()
         {
             var aggregate = new TAggregate();
             var streamName = $"{aggregate.StreamPrefix}{id}";

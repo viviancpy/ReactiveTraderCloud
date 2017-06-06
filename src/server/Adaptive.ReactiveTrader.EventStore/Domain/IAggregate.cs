@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Adaptive.ReactiveTrader.EventStore.Process;
 
 namespace Adaptive.ReactiveTrader.EventStore.Domain
 {

@@ -2,13 +2,13 @@ namespace Adaptive.ReactiveTrader.Server.TradeExecution.Commands
 {
     public class RejectTradeCommand
     {
-        public RejectTradeCommand(string tradeId, string reason)
+        public RejectTradeCommand(long tradeId, string reason)
         {
             TradeId = tradeId;
             Reason = reason;
         }
 
-        public string TradeId { get; }
+        public long TradeId { get; }
         public string Reason { get; }
     }
 }
