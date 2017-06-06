@@ -39,9 +39,9 @@ crossbarContainer_minor="1"
 crossbarContainer="weareadaptive/crossbar:$crossbarContainer_major.$crossbarContainer_minor"
 
 # eventstore
-vEventstore="3.3.0"
+vEventstore="4.0.1"
 eventstoreContainer_major="0"
-eventstoreContainer_minor="0"
+eventstoreContainer_minor="1"
 eventstoreContainer="weareadaptive/eventstore:$eventstoreContainer_major.$eventstoreContainer_minor"
 
 # node
