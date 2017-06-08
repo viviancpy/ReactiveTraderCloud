@@ -21,15 +21,15 @@ namespace Adaptive.ReactiveTrader.EventStore.Process
         public void Transition(IReadEvent<object> @event)
         {
             // Events passed to this method come from two sources. The "live" source which is a projection stream (e.g. "trade_execution_proj"),
-            // or from the process's stream itself (e.g. "tradeExecution-1"), which is where we replay events from when loading a process. We need
+            // or from the process's stream itself (e.g. "tradeExecution-1"), which is where we replay events from to load up a process. We need
             // to differentiate whether this event is from the process stream or from the projection stream. This is so we can determine if we've
             // already processed a given event (i.e. an event from the projection stream) by keeping track of the last processed event number. The 
             // event number is stored as part of the metadata for events written to the process stream. There may be a better way to do this using
             // the "LinkTo" event type, which is essentially an event which links to another event.
-            var isFromProcessStream = IsFromProcessStream(@event.StreamId);
+            var isProcessStream = @event.StreamId.StartsWith(StreamPrefix);
 
-            var eventNumber = isFromProcessStream
-                ? int.Parse(@event.Metadata[MetadataKeys.ProcessEventNumber])
+            var eventNumber = isProcessStream
+                ? int.Parse(@event.Metadata[MetadataKeys.SourceEventNumber])
                 : @event.EventNumber;
 
             if (eventNumber <= _lastProcessedEventNumber)
@@ -42,13 +42,13 @@ namespace Adaptive.ReactiveTrader.EventStore.Process
             _lastProcessedEventNumber = eventNumber;
             Version++;
 
-            // If we're from the process stream, we don't write out the event again.
-            if (isFromProcessStream) return;
+            // If we're from the process stream, we don't want to write out the event again.
+            if (isProcessStream) return;
 
             var metadata = new Dictionary<string, string>
             {
-                { MetadataKeys.ProcessStreamId, @event.StreamId },
-                { MetadataKeys.ProcessEventNumber, eventNumber.ToString() }
+                { MetadataKeys.SourceStreamId, @event.StreamId },
+                { MetadataKeys.SourceEventNumber, eventNumber.ToString() }
             };
 
             var writeEvent = new WriteEvent(@event.Payload, metadata);
@@ -83,11 +83,6 @@ namespace Adaptive.ReactiveTrader.EventStore.Process
         protected void AddMessageToDispatch(Message message)
         {
             _undispatchedMessages.Add(message);
-        }
-
-        private bool IsFromProcessStream(string streamId)
-        {
-            return streamId.StartsWith(StreamPrefix);
         }
     }
 }

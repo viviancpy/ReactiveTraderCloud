@@ -8,7 +8,7 @@
         public static readonly string UserIdentityHeader = "UserIdentity";
         public static readonly string ServerNameHeader = "ServerName";
         public static readonly string ServerClockHeader = "ServerClock";
-        public static readonly string ProcessStreamId = "ProcessStreamId";
-        public static readonly string ProcessEventNumber = "ProcessEventNumber";
+        public static readonly string SourceStreamId = "SourceStreamId";
+        public static readonly string SourceEventNumber = "SourceEventNumber";
     }
 }
