@@ -20,6 +20,32 @@ docker run -t --net=host      \
      $serversContainer.$build \
      $populateCommand > populate_id
 
+body=$(cat << EOF
+fromStreams(["\$ce-trade", "\$ce-creditAccount"])
+    .when({
+        TradeCreatedEvent: function (s, e) {
+            linkTo("trade_execution", e);
+        },
+        CreditReservedEvent: function (s, e) {
+            linkTo("trade_execution", e);
+        },
+        CreditLimitBreachedEvent: function (s, e) {
+            linkTo("trade_execution", e);
+        },
+        TradeCompletedEvent: function (s, e) {
+            linkTo("trade_execution", e);
+        },
+        TradeRejectedEvent: function (s, e) {
+            linkTo("trade_execution", e);
+        }
+    });
+EOF
+)
+
+curl -X POST -i "http://localhost:2113/projections/continuous?name=trade_execution_proj&type=JS&enabled=true&emit=true&trackemittedstreams=true" -u admin:changeit -H "Content-Type: application/json" -d "$body"
+
+curl -X PUT -i "http://localhost:2113/subscriptions/trade_execution/trade_execution_group" -u admin:changeit -H "Content-Type: application/json" -d '{ "resolveLinktos": true }'
+
 # commit container
 docker commit `cat eventstore_id` $populatedEventstoreContainer
 docker tag $populatedEventstoreContainer $populatedEventstoreContainer.$build
